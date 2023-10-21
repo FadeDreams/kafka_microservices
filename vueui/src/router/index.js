@@ -3,11 +3,18 @@ import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import DashboardView from "../views/DashboardView.vue";
+import SaveOrderView from "../views/SaveOrderView.vue";
 
 //import { useStore } from 'vuex';
 //const store = useStore();
 
 const routes = [
+  { path: '/', redirect: '/dashboard' },
+  {
+    path: "/saveorder",
+    name: "saveorderview",
+    component: SaveOrderView,
+  },
   {
     path: "/dashboard",
     name: "dashboard",

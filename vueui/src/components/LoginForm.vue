@@ -27,7 +27,8 @@ const password = ref('');
 
 const login = async () => {
   try {
-    const apiUrl = process.env.VUE_APP_API_URL;
+    const apiUrl = process.env.VUE_APP_AUTH_API_URL;
+    console.log(apiUrl)
     const response = await axios.post(apiUrl + 'login', {
       email: email.value,
       password: password.value,

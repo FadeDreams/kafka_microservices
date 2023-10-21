@@ -16,10 +16,10 @@ export default {
 
   methods: {
     async logout() {
-      const apiUrl = process.env.VUE_APP_API_URL;
+      const apiUrl = process.env.VUE_APP_AUTH_API_URL;
 
       try {
-        await this.$axios.post(apiUrl + 'logout');
+        await this.$axios.post(apiUrl + '/logout');
         // You can also perform any additional cleanup or state changes here
         // For example, clearing the user's session or resetting some data.
         // Once the POST request is successful, you can navigate to the login or home page.

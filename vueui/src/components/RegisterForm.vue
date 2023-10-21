@@ -31,10 +31,9 @@ const email = ref('');
 const password = ref('');
 const confirm_password = ref('');
 const registrationMessage = ref('');
-
 const register = async () => {
   try {
-    const apiUrl = process.env.VUE_APP_API_URL;
+    const apiUrl = process.env.VUE_APP_AUTH_API_URL;
     const response = await axios.post(apiUrl + 'register', {
       email: email.value,
       password: password.value,

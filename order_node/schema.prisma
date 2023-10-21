@@ -1,0 +1,17 @@
+model Order {
+  id          Int    @id @default(autoincrement())
+  productName String
+  pstatus     String
+  quantity    Int
+  price       Float? // Add the price field with an optional Decimal type
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./node_modules/.prisma/client"
+}

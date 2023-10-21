@@ -1,8 +1,9 @@
 import { createStore } from "vuex";
 
+const token = localStorage.getItem('token'); // Check localStorage for the token
 export default createStore({
   state: {
-    token: null,
+    token: token || null,
     user: null,
 
   },
@@ -29,6 +30,7 @@ export default createStore({
   },
   actions: {
     login({ commit }, { token, user }) {
+      localStorage.setItem('token', token);
       commit('setToken', token);
       commit('setUser', user);
     },

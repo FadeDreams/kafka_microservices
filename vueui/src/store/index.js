@@ -9,7 +9,11 @@ export default createStore({
   getters: {
     isAuthenticated(state) {
       return state.token != null;
+    },
+    getUser(state) {
+      return state.user;
     }
+
   },
   mutations: {
     setToken(state, token) {
@@ -17,6 +21,7 @@ export default createStore({
     },
     setUser(state, user) {
       state.user = user;
+      console.log("in setuser", user)
     },
     clearAuth(state) {
       state.token = null;

@@ -1,19 +1,25 @@
 <template>
   <nav>
     <router-link to="/">Home</router-link> |
-    <router-link to="/dashboard">Dashboard</router-link>|
-    <router-link v-if="isAuthenticated" to="/logout">Logout</router-link>|
+    <router-link to="/dashboard">Dashboard</router-link> |
+    <router-link to="/logout">Logout</router-link> |
+    <router-link to="/login">Login</router-link> |
+    <router-link to="/register">Register</router-link> |
     <router-link to="/about">About</router-link>
   </nav>
+
   <router-view />
 </template>
 
 <script>
 export default {
+
   methods: {
     async logout() {
+      const apiUrl = process.env.VUE_APP_API_URL;
+
       try {
-        await this.$axios.post('http://127.0.0.1:1111/api/logout');
+        await this.$axios.post(apiUrl + 'logout');
         // You can also perform any additional cleanup or state changes here
         // For example, clearing the user's session or resetting some data.
         // Once the POST request is successful, you can navigate to the login or home page.

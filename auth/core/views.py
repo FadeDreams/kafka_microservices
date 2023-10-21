@@ -1,3 +1,4 @@
+from django.core import signing
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,7 +10,6 @@ from .authentication import create_access_token, create_refresh_token, decode_re
 # from rest_framework.authentication import get_authorization_header
 import jwt
 
-from django.core import signing
 
 # Now you can use the get_authorization_header function
 
@@ -25,17 +25,18 @@ class RegisterAPIView(APIView):
         serializer = UserSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         # try:
-            # serializer.is_valid(raise_exception=True)
+        # serializer.is_valid(raise_exception=True)
         # Continue processing if data is valid
-            # except serializers.ValidationError as e:
+        # except serializers.ValidationError as e:
         serializer.save()
 
         return Response(request.data)
         # serializer = RegisterSerializer(data=request.data)
         # if serializer.is_valid():
-            # serializer.save()
-            # return Response(serializer.data)
+        # serializer.save()
+        # return Response(serializer.data)
         # return Response(serializer.errors)
+
 
 class LoginAPIView(APIView):
     def post(self, request):
@@ -53,7 +54,8 @@ class LoginAPIView(APIView):
 
         serializer = UserSerializer(user)
         response = Response()
-        response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
+        response.set_cookie(key='refresh_token',
+                            value=refresh_token, httponly=True)
         response.data = {
             'token': access_token,
             'user': serializer.data
@@ -65,22 +67,24 @@ class LoginAPIView(APIView):
 
 class UserAPIView(APIView):
     authentication_classes = [JWTAuthentication]
+
     def get(self, request):
         return Response(UserSerializer(request.user).data)
         # auth = get_authorization_header(request).split()
         # if auth and len(auth) == 2:
-            # try:
-                # token = auth[1]
-                # payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-                # user = User.objects.get(pk=payload['id'])
-                # serializer = UserSerializer(user)
-                # return Response(serializer.data)
-            # except jwt.DecodeError as identifier:
-                # raise exceptions.AuthenticationFailed('Your token is invalid.')
-            # except jwt.ExpiredSignatureError as identifier:
-                # raise exceptions.AuthenticationFailed('Your token is expired.')
+        # try:
+        # token = auth[1]
+        # payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        # user = User.objects.get(pk=payload['id'])
+        # serializer = UserSerializer(user)
+        # return Response(serializer.data)
+        # except jwt.DecodeError as identifier:
+        # raise exceptions.AuthenticationFailed('Your token is invalid.')
+        # except jwt.ExpiredSignatureError as identifier:
+        # raise exceptions.AuthenticationFailed('Your token is expired.')
 
         return Response({'message': 'Invalid token.'})
+
 
 class RefreshAPIView(APIView):
     def post(self, request):
@@ -92,6 +96,7 @@ class RefreshAPIView(APIView):
         access_token = create_access_token(user.id)
         return Response({'token': access_token})
 
+
 class LogoutAPIView(APIView):
     def post(self, request):
         response = Response()
@@ -100,6 +105,7 @@ class LogoutAPIView(APIView):
             'message': 'success'
         }
         return response
+
 
 class ForgotAPIView(APIView):
     def post(self, request):
@@ -114,6 +120,7 @@ class ForgotAPIView(APIView):
         Reset.objects.create(email=email, token=reset_token)
         return Response({'token': reset_token})
 
+
 class ResetAPIView(APIView):
     def post(self, request):
         data = request.data
@@ -127,4 +134,3 @@ class ResetAPIView(APIView):
         user.set_password(password)
         user.save()
         return Response({'message': 'success'})
-

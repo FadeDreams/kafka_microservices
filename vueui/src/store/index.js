@@ -1,9 +1,13 @@
 import { createStore } from "vuex";
 import axios from 'axios';
+import axiosInstance from '@/axios-instance'; // Update the path to your Axios instance
 const token = localStorage.getItem('token'); // Check localStorage for the token
+const refresh_token = localStorage.getItem('refresh_token'); // Check localStorage for the token
+
 export default createStore({
   state: {
     token: token || null,
+    refresh_token: refresh_token || null,
     user: null,
 
   },
@@ -20,6 +24,9 @@ export default createStore({
     setToken(state, token) {
       state.token = token;
     },
+    setRefreshToken(state, token) {
+      state.refresh_token = token;
+    },
     setUser(state, user) {
       state.user = user;
       console.log("in setuser", user)
@@ -29,9 +36,11 @@ export default createStore({
     },
   },
   actions: {
-    login({ commit }, { token, user }) {
+    login({ commit }, { token, refresh_token, user }) {
       localStorage.setItem('token', token);
+      localStorage.setItem('refresh_token', refresh_token);
       commit('setToken', token);
+      commit('setRefreshToken', token);
       commit('setUser', user);
     },
     logout({ commit }) {
@@ -41,11 +50,13 @@ export default createStore({
       try {
         const token = state.token;
 
-        const response = await axios.get('http://127.0.0.1:1111/api/user', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        //const response = await axios.get('http://127.0.0.1:1111/api/user', {
+        //headers: {
+        //Authorization: `Bearer ${token}`,
+        //},
+        //});
+        const response = await axiosInstance.get('/user');
+        console.log('in fetchUserData', response.data)
 
         // Handle the response and user data as needed
         commit('setUser', response.data);

@@ -36,12 +36,14 @@ const login = async () => {
 
     // Assuming the response contains a "token" and "user" property
     const token = response.data.token;
+    const refresh_token = response.data.refresh_token;
     const user = response.data.user;
 
     // Handle the token and user data as needed (e.g., store in Vuex state, local storage, etc.)
     console.log('Token:', token);
+    console.log('refresh_token:', refresh_token);
     console.log('User:', user);
-    store.dispatch('login', { token, user });
+    store.dispatch('login', { token, refresh_token, user });
 
     // Redirect the user to the dashboard page
     router.push('/dashboard');

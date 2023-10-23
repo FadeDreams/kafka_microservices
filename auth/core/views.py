@@ -11,6 +11,11 @@ from .authentication import create_access_token, create_refresh_token, decode_re
 import jwt
 
 
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
+
 # Now you can use the get_authorization_header function
 
 
@@ -58,6 +63,7 @@ class LoginAPIView(APIView):
                             value=refresh_token, httponly=True)
         response.data = {
             'token': access_token,
+            'refresh_token': refresh_token,
             'user': serializer.data
         }
         return response
@@ -86,14 +92,38 @@ class UserAPIView(APIView):
         return Response({'message': 'Invalid token.'})
 
 
+# class RefreshAPIView(APIView):
+    # def post(self, request):
+        # refresh_token = request.COOKIES.get('refresh_token')
+        # payload = decode_refresh_token(refresh_token)
+        # if payload is None:
+        # raise exceptions.AuthenticationFailed('unauthenticated')
+        # user = User.objects.get(pk=payload['id'])
+        # access_token = create_access_token(user.id)
+        # return Response({'token': access_token})
+
 class RefreshAPIView(APIView):
+    # Optional, you can remove this line if you don't need session or basic auth
+
     def post(self, request):
-        refresh_token = request.COOKIES.get('refresh_token')
+        # Get the refresh token from the Authorization header
+        authorization_header = request.headers.get('Authorization')
+        print(authorization_header)
+
+        if not authorization_header:
+            raise exceptions.AuthenticationFailed(
+                'Refresh token is missing in the Authorization header')
+
+        # Extract the token from the header
+        _, refresh_token = authorization_header.split(' ')
+
         payload = decode_refresh_token(refresh_token)
         if payload is None:
-            raise exceptions.AuthenticationFailed('unauthenticated')
+            raise exceptions.AuthenticationFailed('Unauthenticated')
+
         user = User.objects.get(pk=payload['id'])
         access_token = create_access_token(user.id)
+
         return Response({'token': access_token})
 
 

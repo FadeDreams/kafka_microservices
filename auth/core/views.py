@@ -134,3 +134,34 @@ class ResetAPIView(APIView):
         user.set_password(password)
         user.save()
         return Response({'message': 'success'})
+
+
+class DeductCreditsAPIView(APIView):
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        credits_to_deduct = request.data.get('amount')
+
+        try:
+            user = User.objects.get(id=user_id)
+            if user.credit >= credits_to_deduct:
+                user.credit -= credits_to_deduct
+                user.save()
+                return Response({'message': 'Credits deducted successfully.'})
+            else:
+                raise exceptions.APIException('Insufficient credits.')
+        except User.DoesNotExist:
+            raise exceptions.APIException('User not found.')
+
+
+class AddCreditsAPIView(APIView):
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        credits_to_add = request.data.get('amount')
+
+        try:
+            user = User.objects.get(id=user_id)
+            user.credit += credits_to_add
+            user.save()
+            return Response({'message': 'Credits deducted successfully.'})
+        except User.DoesNotExist:
+            raise exceptions.APIException('User not found.')

@@ -53,6 +53,31 @@ router.get('/orders/:id', async (req: Request, res: Response) => {
   }
 });
 
+// Update a product by its ID
+router.put('/orders/:id', async (req: Request, res: Response) => {
+  const orderId = parseInt(req.params.id);
+
+  const { pstatus } = req.body; // You want to update the "pstatus" field
+
+  try {
+    // Use Prisma to update the order by ID
+    const updatedOrder = await prisma.order.update({
+      where: {
+        id: orderId,
+      },
+      data: {
+        pstatus,
+      },
+    });
+
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error('Error updating order by ID:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 prisma.$disconnect();
 
 export default router;

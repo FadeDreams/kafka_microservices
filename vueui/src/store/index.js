@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-
+import axios from 'axios';
 const token = localStorage.getItem('token'); // Check localStorage for the token
 export default createStore({
   state: {

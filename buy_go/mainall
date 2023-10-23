@@ -1,0 +1,152 @@
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt
+	"github.com/gorilla/mux"
+	"net/http"
+)
+
+type OrderRequest struct {
+	PStatus string `json:"pstatus"`
+}
+
+type DeductRequest struct {
+	UserID int     `json:"user_id"`
+	Amount float64 `json:"amount"`
+}
+
+type AddRequest struct {
+	UserID int     `json:"user_id"`
+	Amount float64 `json:"amount"`
+}
+
+type BuyRequest struct {
+	UserID int     `json:"user_id"`
+	Amount float64 `json:"amount"`
+}
+
+func step_a(orderID int, pStatus string) bool {
+	orderRequest := OrderRequest{
+		PStatus: pStatus,
+	}
+
+	orderRequestJSON, _ := json.Marshal(orderRequest)
+
+	req, err := http.NewRequest("PUT", fmt.Sprintf("http://127.0.0.1:5002/orders/%d", orderID), bytes.NewBuffer(orderRequestJSON))
+	if err != nil {
+		fmt.Printf("Step A failed to create request: %s\n", err)
+		return false
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("Step A failed: %s\n", err)
+		return false
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("Step A failed with status code: %d\n", resp.StatusCode)
+		return false
+	}
+
+	fmt.Println("Step A executed successfully")
+	return true
+}
+
+func step_b(userID int, amount float64) bool {
+	deductRequest := DeductRequest{
+		UserID: userID,
+		Amount: amount,
+	}
+
+	deductRequestJSON, _ := json.Marshal(deductRequest)
+
+	resp, err := http.Post("http://127.0.0.1:1111/api/deduct", "application/json", bytes.NewBuffer(deductRequestJSON))
+	if err != nil {
+		fmt.Printf("Step B failed: %s\n", err)
+		return false
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("Step B failed with status code: %d\n", resp.StatusCode)
+		return false
+	}
+
+	fmt.Println("Step B executed successfully")
+	return true
+}
+
+func compensate_a(userID int, amount float64) (bool, error) {
+	addRequest := AddRequest{
+		UserID: userID,
+		Amount: amount,
+	}
+
+	addRequestJSON, _ := json.Marshal(addRequest)
+
+	resp, err := http.Post("http://127.0.0.1:1111/api/add", "application/json", bytes.NewBuffer(addRequestJSON))
+	if err != nil {
+		fmt.Printf("Compensating step A failed: %s\n", err)
+		return false, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("Compensating step A failed with status code: %d\n", resp.StatusCode)
+		return false, err
+	}
+
+	fmt.Println("Compensating step A was successful")
+	return true, nil
+}
+
+func BuyHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	orderID := vars["id"]
+
+	// Parse the request body to get user ID and amount
+	var requestBody BuyRequest
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&requestBody); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Printf("Processing buy request for order ID %s, userID: %d, amount: %f\n", orderID, requestBody.UserID, requestBody.Amount)
+
+	// Execute step A
+	if step_a(orderID, "disable") {
+		// Execute step B
+		if step_b(requestBody.UserID, requestBody.Amount) {
+			// Saga completed successfully
+			w.WriteHeader(http.StatusOK)
+		} else {
+			// Step B failed, compensate for step A
+			compensate_a(orderID, requestBody.Amount)
+			http.Error(w, "Saga failed", http.StatusInternalServerError)
+		}
+	} else {
+		// Step A failed, no need to execute step B
+		http.Error(w, "Saga failed", http.StatusInternalServerError)
+	}
+}
+
+func main() {
+	r := mux.NewRouter()
+	r.HandleFunc("/buy/{id:[0-9]+}", BuyHandler).Methods("POST")
+	http.Handle("/", r)
+
+	fmt.Println("Server started on :8080")
+	http.ListenAndServe(":8080", r)
+}
+

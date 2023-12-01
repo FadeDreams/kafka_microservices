@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
 //const target = 'http://localhost:5001/user';
-const target = 'http://127.0.0.1:1111/api/user';
+const target = 'http://auth:8000/api/user';
 
 //const target = 'http://order:5001/check_authentication';
 

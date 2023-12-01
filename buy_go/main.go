@@ -4,13 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
+
 	//import os
-	"github.com/rs/cors"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/rs/cors"
 )
 
 type OrderRequest struct {
@@ -37,7 +40,7 @@ func step_a(orderID int, pStatus string) bool {
 
 	orderRequestJSON, _ := json.Marshal(orderRequest)
 
-	req, err := http.NewRequest("PUT", fmt.Sprintf("http://127.0.0.1:5002/orders/%d", orderID), bytes.NewBuffer(orderRequestJSON))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("http://order_node:5002/orders/%d", orderID), bytes.NewBuffer(orderRequestJSON))
 	if err != nil {
 		fmt.Printf("Step A failed to create request: %s\n", err)
 		return false
@@ -65,7 +68,7 @@ func step_a(orderID int, pStatus string) bool {
 
 func step_b(userID int, amount float64) bool {
 	// Simulate step B
-	// Perform a POST request to http://127.0.0.1:1111/api/deduct with JSON
+	// Perform a POST request to http://auth:8000/api/deduct with JSON
 	deductRequest := DeductRequest{
 		UserID: userID,
 		Amount: amount,
@@ -74,7 +77,7 @@ func step_b(userID int, amount float64) bool {
 	deductRequestJSON, _ := json.Marshal(deductRequest)
 	//fmt.Printf(string(deductRequestJSON))
 
-	resp, err := http.Post("http://127.0.0.1:1111/api/deduct", "application/json", bytes.NewBuffer(deductRequestJSON))
+	resp, err := http.Post("http://auth:8000/api/deduct", "application/json", bytes.NewBuffer(deductRequestJSON))
 	if err != nil {
 		fmt.Printf("Step B failed: %s\n", err)
 		return false
@@ -167,7 +170,7 @@ func compensate_a(userID int, amount float64) (bool, error) {
 
 	addRequestJSON, _ := json.Marshal(addRequest)
 
-	resp, err := http.Post("http://127.0.0.1:1111/api/add", "application/json", bytes.NewBuffer(addRequestJSON))
+	resp, err := http.Post("http://auth:8000/api/add", "application/json", bytes.NewBuffer(addRequestJSON))
 	if err != nil {
 		errLog := fmt.Sprintf("Compensating step A failed: %s\n", err, addRequestJSON)
 		writeErrorLogToFile(errLog)
@@ -195,7 +198,7 @@ func main() {
 	// Create a CORS handler with your desired configuration
 	//cors optionsGoes Below
 	corsOpts := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:8080"}, //you service is available and allowed for this base url
+		AllowedOrigins: []string{"http://vueapp1:3000", "http://localhost:3000"}, //you service is available and allowed for this base url
 		AllowedMethods: []string{
 			http.MethodGet, //http methods for your app
 			http.MethodPost,
@@ -211,6 +214,10 @@ func main() {
 		},
 	})
 
-	log.Fatal(http.ListenAndServe(":8081", corsOpts.Handler(router)))
-
+	// log.Fatal(http.ListenAndServe(":8081", corsOpts.Handler(router)))
+	// Start the server
+	addr := ":8081"
+	log.Printf("Server listening on %s...\n", addr)
+	handler := corsOpts.Handler(router)
+	log.Fatal(http.ListenAndServe(addr, handler))
 }

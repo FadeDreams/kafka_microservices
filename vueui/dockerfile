@@ -1,0 +1,27 @@
+
+# Use the official Node.js Alpine image
+FROM node:21-alpine
+
+# Set working directory
+WORKDIR /app
+
+COPY package.json .
+RUN npm install --only=prod
+RUN npm install -g @vue/cli-service
+
+# Copy only necessary files and directories, excluding node_modules and other unwanted files
+COPY src/ src/
+COPY public/ public/
+
+COPY vue.config.js .
+COPY babel.config.js .
+COPY jsconfig.json .
+COPY .browserslistrc .
+COPY .env .
+COPY package*.json .
+
+
+EXPOSE 3000
+
+# Specify the command to run your application
+CMD ["npm", "run", "serve"]

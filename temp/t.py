@@ -1,3 +1,5 @@
+# 8081 go
+# 8000 
 from confluent_kafka import Producer, Consumer
 
 # Kafka broker configuration

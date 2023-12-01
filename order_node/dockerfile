@@ -1,0 +1,39 @@
+# Use an official Node.js runtime as a parent image
+FROM node:alpine
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the package.json and package-lock.json to the container
+COPY package*.json ./
+
+# Install application dependencies
+RUN npm install
+RUN npm install -g typescript ts-node
+
+COPY services/ services/
+COPY routes/ routes/
+COPY models/ models/
+COPY migrations/ migrations/
+COPY dto/ dto/
+COPY models/ models/
+
+COPY tsconfig.json .
+COPY .env .
+COPY schema.prisma .
+COPY server.ts .
+COPY express.d.ts .
+COPY package.json .
+COPY package-lock.json .
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Copy the rest of your application's source code
+COPY . .
+
+# Expose the port your Express app will listen on
+EXPOSE 5002
+
+# Define the command to run your Node.js application
+CMD [ "ts-node", "server.ts" ] 

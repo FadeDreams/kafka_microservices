@@ -16,18 +16,21 @@ router.get('/orders', async (req: Request, res: Response) => {
 
 // Create a new order
 router.post('/orders', async (req: Request, res: Response) => {
-  const { productName, pstatus, quantity, price } = req.body as OrderDTO;
-  const newOrder = await prisma.order.create({
-    data: {
-      productName,
-      pstatus,
-      quantity,
-      price
-    },
-  });
+  //console.log("***********************************************************")
+  //console.log(req.user)
+  //console.log("***********************************************************")
+  //const { productName, pstatus, quantity, price } = req.body as OrderDTO;
+  //const newOrder = await prisma.order.create({
+  //data: {
+  //productName,
+  //pstatus,
+  //quantity,
+  //price
+  //},
+  //});
 
-  sendMessage(newOrder);
-  res.status(201).json(newOrder);
+  //sendMessage(newOrder);
+  //res.status(201).json(newOrder);
 });
 
 // Get an order by its ID

@@ -2,6 +2,7 @@ import express from 'express';
 import { json } from 'body-parser';
 import orderRoutes from './routes/orderRoutes';
 import { AuthChecker } from './services/authchecker';
+import { CustomRequest } from './dto/orderdto';
 
 import dotenv from "dotenv";
 import cors from "cors";
@@ -11,8 +12,12 @@ dotenv.config();
 
 app.use(cors()); // Apply CORS middleware before defining routes
 
-app.use(async (req, res, next) => {
+app.use(async (req: CustomRequest, res, next) => {
   const accessToken = req.headers.authorization?.replace('Bearer ', '');
+
+  console.log("***********************************************************")
+  console.log(accessToken)
+  console.log("***********************************************************")
 
   if (accessToken) {
     try {

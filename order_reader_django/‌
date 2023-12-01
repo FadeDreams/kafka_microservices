@@ -1,0 +1,10 @@
+asgiref==3.7.2
+async-timeout==4.0.3
+confluent-kafka==2.3.0
+Django==4.2.7
+django-cors-headers==4.3.1
+django-redis==5.4.0
+djangorestframework==3.14.0
+pytz==2023.3.post1
+redis==5.0.1
+sqlparse==0.4.4

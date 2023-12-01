@@ -1,3 +1,5 @@
+import express, { Request as ExpressRequest, Response, NextFunction } from 'express';
+
 interface OrderDTO {
   productName: string;
   pstatus: string;
@@ -5,5 +7,9 @@ interface OrderDTO {
   price: number;
 }
 
-export { OrderDTO };
+// Define a custom Request interface
+interface CustomRequest extends ExpressRequest {
+  user?: any; // Modify this according to the actual user type
+}
+export { OrderDTO, CustomRequest };
 

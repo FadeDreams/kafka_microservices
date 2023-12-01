@@ -1,0 +1,109 @@
+version: "3.8"
+
+networks:
+  my_network:
+    driver: bridge
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:6.0.14
+    depends_on:
+      - zookeeper
+    ports:
+      - '29092:29092'
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:9092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - my_network
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    networks:
+      - my_network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.0.14
+    ports:
+      - '2181:2181'
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - my_network
+
+  redis:
+    image: "redis:latest"
+    command: ["redis-server", "--maxmemory", "1g"]
+    ports:
+      - "6379:6379"
+    networks:
+      - my_network
+
+  # auth:
+  #   build:
+  #     context: ./auth
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - kafka
+  #   ports:
+  #     - 5001:5001
+  #   volumes:
+  #     - auth-data:/app/data  # Adjust the volume path as needed
+  #   networks:
+  #     - my_network
+  
+  # order_reader_django:
+  #   build:
+  #     context: ./order_reader_django
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - kafka
+  #   ports:
+  #     - 8001:8001
+  #   volumes:
+  #     - order-reader-django:/app/data  # Adjust the volume path as needed
+  #   networks:
+  #     - my_network
+
+  # order_node:
+  #   build:
+  #     context: ./order_node
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - kafka
+  #   ports:
+  #     - 5002:5002
+  #   volumes:
+  #     - order-data:/app/data  # Adjust the volume path as needed
+  #   networks:
+  #     - my_network
+  
+  # buy_go:
+  #   build:
+  #     context: ./buy_go
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - kafka
+  #   ports:
+  #     - 8080:8080
+  #   volumes:
+  #     - buy-go:/app/data  # Adjust the volume path as needed
+  #   networks:
+  #     - my_network
+  #
+volumes:
+  auth-data:
+  order-data:
+  order-reader-django:
+  buy-go:

@@ -18,10 +18,16 @@ RUN apt-get update && \
     pip install --no-cache-dir -r requirements.txt
 
 # Make port 80 available to the world outside this container
-EXPOSE 80
+EXPOSE 8081
 
 # Define environment variable
-ENV NAME World
+ENV DJANGO_SETTINGS_MODULE=order_reader_django.settings
 
-# Run app.py when the container launches
-CMD ["python", "app.py"]
+# Collect static files
+# RUN python3 manage.py collectstatic --noinput
+
+# Run the Django development server
+# CMD ["python3", "manage.py", "runserver", "0.0.0.0:8081"]
+# CMD ["python3", "manage.py", "kafka_watcher"]
+# Run the Django development server and Kafka watcher
+CMD ["sh", "-c", "python3 manage.py runserver 0.0.0.0:8081 && python3 manage.py kafka_watcher"]

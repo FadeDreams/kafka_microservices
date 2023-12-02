@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-$r$cncku53dp+y+as=p3#23+l@u%g(wquc#_8q6qmj%1!^i6$7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -47,25 +47,62 @@ INSTALLED_APPS = DEF_INSTALLED_APPS + CUSTOM_INSTALLED_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 
 # Configure CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # This allows all origins, including '*'
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+  'http://localhost:8000',
+  'http://auth:8000',
+
+  'http://localhost:5002',
+  'http://order_node:5002',
+
+  'http://localhost:8001',
+  'http://order_reader_django:8001',
+
+  'http://localhost:8081',
+  'http://buy_go:8081',
+
+  'http://localhost:3000',
+  'http://vueapp1:3000',
+]
 CORS_ORIGIN_WHITELIST = (
   'http://localhost:8000',
+  'http://auth:8000',
+
   'http://localhost:5002',
-  'http://localhost:5003',
-  'http://localhost:5004',
+  'http://order_node:5002',
+
+  'http://localhost:8001',
+  'http://order_reader_django:8001',
+
+  'http://localhost:8081',
+  'http://buy_go:8081',
+
+  'http://localhost:3000',
+  'http://vueapp1:3000',
 )
 
+CORS_ALLOW_HEADERS = [
+'accept',
+'accept-encoding',
+'authorization',
+'content-type',
+'dnt',
+'origin',
+'user-agent',
+'x-csrftoken',
+'x-requested-with',
+]
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [

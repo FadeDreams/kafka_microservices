@@ -7,7 +7,7 @@ data = {
 }
 
 # URL for the POST request
-url = 'http://127.0.0.1:1111/api/login'
+url = 'http://auth:8000/api/login'
 
 # Making the POST request using the requests library
 response = requests.post(url, json=data)

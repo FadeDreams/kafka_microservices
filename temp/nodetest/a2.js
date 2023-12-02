@@ -1,8 +1,8 @@
 const http = require('http');
 
 const options = {
-  hostname: '127.0.0.1',
-  port: 1111,
+  hostname: 'auth',
+  port: 8000,
   path: '/api/user',
   method: 'GET',
   headers: {

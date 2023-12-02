@@ -61,7 +61,7 @@ export default {
       }
     },
     fetchOrders() {
-      axios.get('http://127.0.0.1:8000/order_reader/orders/')
+      axios.get('http://localhost:8001/order_reader/orders/')
         .then((response) => {
           // Initialize the "disableButton" property for each order
           this.orders = response.data.map((order) => ({
@@ -90,7 +90,7 @@ export default {
         "amount": order.price.toString()
       };
 
-      axios.post(`http://127.0.0.1:8081/buy/${order.id}`, data, {
+      axios.post(`http://localhost:5002/buy/${order.id}`, data, {
         headers: {
           'Content-Type': 'application/json',
         },

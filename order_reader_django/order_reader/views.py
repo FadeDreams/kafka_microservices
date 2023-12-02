@@ -6,6 +6,10 @@ from .models import Order
 from confluent_kafka import Producer
 import json
 from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+from rest_framework.views import APIView
+
 
 # from rest_framework import status
 # from rest_framework.response import Response
@@ -66,19 +70,21 @@ def order_view(request, order_id=None, format=None):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# class OrderView(APIView):
-# def post(self, request, format=None):
-# serializer = OrderSerializer(data=request.data)
-# if serializer.is_valid():
-# # print('yes ser valid')
-# order = serializer.save()
-# order.save()
-# # Produce Kafka message
-# produce_kafka_verify_order_message(order, serializer.data)
-# return Response(serializer.data, status=status.HTTP_201_CREATED)
-# # else:
-# # print('no ser valid')
-# return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class OrderView(APIView):
+    def post(self, request, format=None):
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            # print('yes ser valid')
+            order = serializer.save()
+            order.save()
+            # Produce Kafka message
+            produce_kafka_verify_order_message(order, serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # else:
+        # print('no ser valid')
+        else:
+            # print('no ser valid')
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # @cache_page(300)
 # def get(self, request, order_id=None, format=None):

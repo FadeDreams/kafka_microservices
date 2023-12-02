@@ -1,7 +1,7 @@
 import requests
 
 # URL for the GET request
-url = 'http://127.0.0.1:1111/api/user'
+url = 'http://auth:8000/api/user'
 
 # Bearer token
 token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjk4MTU4MzgxfQ.rEEHCy6-kEtkDgQt2VEafOjhBt-gchBVUdmk3_IadTE'

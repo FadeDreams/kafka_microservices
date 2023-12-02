@@ -49,14 +49,15 @@ export default createStore({
     async fetchUserData({ commit, state }) {
       try {
         const token = state.token;
+        console.log("token is ", token)
 
-        //const response = await axios.get('http://127.0.0.1:1111/api/user', {
-        //headers: {
-        //Authorization: `Bearer ${token}`,
-        //},
-        //});
-        const response = await axiosInstance.get('/user');
-        console.log('in fetchUserData', response.data)
+        const response = await axios.get('http://localhost:8000/api/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // const response = await axiosInstance.get('/user');
+        // console.log('in fetchUserData', response.data)
 
         // Handle the response and user data as needed
         commit('setUser', response.data);

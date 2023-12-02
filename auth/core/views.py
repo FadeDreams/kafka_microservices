@@ -71,6 +71,15 @@ class LoginAPIView(APIView):
         # return Response({'message': 'Success!'})
 
 
+# class UserAPIView(APIView):
+#     def get(self, request):
+#         if request.user.is_authenticated:
+#             # If the user is authenticated, use the serializer
+#             return Response(UserSerializer(request.user).data)
+#         else:
+#             # If the user is not authenticated, return an appropriate response
+#             raise exceptions.NotAuthenticated(detail='User is not authenticated')
+
 class UserAPIView(APIView):
     authentication_classes = [JWTAuthentication]
 

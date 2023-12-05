@@ -1,37 +1,34 @@
-## Movie Ticket Microservices Architecture
+## Kafka Microservices Application
 
-The Movie Ticket Microservices application introduces an advanced system for transforming the ticketing process. Leveraging a distributed architecture, this platform employs dedicated microservices to handle key aspects of the ticketing workflow.
+The Kafka Microservices application is a robust system built on microservices architecture, comprising five distinct components that play crucial roles in ensuring a seamless and efficient workflow.
 
-### Ticket Microservice
-Efficiently manages the creation and lifecycle of tickets, offering a seamless experience from creation to potential reservation.
+## Overview
 
-### Order Microservice
-Seamlessly orchestrates the ticket ordering process. Communicates with the Ticket Microservice via RabbitMQ, ensuring a decoupled and scalable system.
+### Authentication Microservice (Django and PyJWT)
+Ensures secure authentication and authorization processes. Implemented with Django and PyJWT, this microservice plays a crucial role in safeguarding user interactions.
 
-### Communication via RabbitMQ
-Utilizes RabbitMQ as a message broker for smooth communication between microservices. Enhances flexibility and scalability in handling orders and tickets.
+### Order Node Microservice (Node.js)
+Manages order creation and storage in its local database. This microservice triggers Kafka events upon order submission, contributing to the event-driven nature of the system.
 
-### Ticket Availability Management
-Implements a sophisticated mechanism to temporarily lock ordered tickets. Clients can reserve tickets during this period, with the Expire Microservice intervening if not reserved within the allocated time.
+### Order Reader Django Microservice
+Reads and processes order events from Kafka, providing real-time updates. This Django-based microservice enhances the responsiveness of the application by staying in sync with order-related events.
 
-### Handling Race Conditions
-Employs an Optimistic Concurrency Control (OCC) strategy within the Order Microservice. Ensures data integrity and consistency during concurrent operations without relying on external packages. Uses versioning to track changes and intelligently handles concurrent updates.
+### Buy Go Microservice (Golang)
+Follows the SAGA pattern for seamless purchase processes. Developed in Golang, this microservice allows for compensation in case of failures, ensuring the reliability of the application.
 
-### Authentication and Session Management
-Intricately designed authentication processes depend on RabbitMQ, eliminating direct calls for enhanced security. User sessions are efficiently managed in Redis, contributing to a resilient and performant application.
+### VueUI Microservice (Vue3 & Vuex)
+Responsible for orchestrating the user interface, this microservice, developed with Vue3 and Vuex, facilitates the placement of orders into the relevant microservices. It keeps itself updated using socket.io, providing a dynamic and responsive user experience.
 
 ## Project Structure
-```
-/mov_ticket
+```plaintext
+/kafka_microservices
 |-- auth
-|-- client
-|-- common
+|-- buy_go
 |-- docker-compose.yml
-|-- expiration
-|-- orders
-|-- tickets
-|-- shared.env
-|-- test-rabbitmq
+|-- order_node
+|-- order_reader_django
+|-- temp
+|-- vueui
 ```
 
 ## Getting Started
@@ -39,4 +36,4 @@ Intricately designed authentication processes depend on RabbitMQ, eliminating di
 2. Run the Docker Compose configuration using `docker-compose up`.
 3. Explore the various microservices and their functionalities.
 
-Contribute, report issues, or provide feedback to collectively enhance and create a seamless and enjoyable movie ticketing experience!
+Feel free to contribute, report issues, or provide feedback. Let's enhance and optimize the Kafka Microservices application together!

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-node
+  template:
+    metadata:
+      labels:
+        app: order-node
+    spec:
+      containers:
+      - name: order-node
+        image: order-node:latest
+        ports:
+        - containerPort: 5002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-node
+spec:
+  type: LoadBalancer
+  selector:
+    app: order-node
+  ports:
+    - port: 5002
+      targetPort: 5002

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vueui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vueui
+  template:
+    metadata:
+      labels:
+        app: vueui
+    spec:
+      containers:
+      - name: vueui
+        image: vueui:latest
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vueui
+spec:
+  type: LoadBalancer
+  selector:
+    app: vueui
+  ports:
+    - port: 3000
+      targetPort: 3000
